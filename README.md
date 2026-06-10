@@ -48,6 +48,20 @@ For installation using Docker, follow these steps and run the commands on the ta
 6. Create and start the containers: `docker compose up -d`.
 7. Afterward, the Looking Glass should be reachable from your web browser at `http://$your_server_ip/`!
 
+#### Kubernetes / GHCR
+
+A single combined image (nginx + php-fpm in one container) is published to the GitHub Container Registry on every push and tag:
+
+```
+ghcr.io/dragonsecurity-incubating/lookingglass:latest   # or a pinned tag, e.g. :1.5.1
+```
+
+The container listens on **port 80** (HTTP via nginx) — not 9000, which is php-fpm's internal FastCGI port. Configure the app through the same environment variables documented in `docker-compose.yml` / `docker/php-fpm/src/config.php`.
+
+> **Run a single replica (or use sticky sessions).** A command (ping/mtr/traceroute) is a multi-request flow: the form POST stores the target in a **local, file-based PHP session**, and a follow-up `fetch('backend.php')` request reads it back. PHP sessions are not shared between pods, so with multiple replicas behind a load balancer the follow-up request can land on a different pod that has no session, and the command silently produces no output. Either run `replicas: 1`, or enable request stickiness on your ingress/service (e.g. a Traefik sticky cookie) so each client stays pinned to one pod.
+
+> **Capabilities.** ping/mtr/traceroute open ICMP/raw sockets and require `CAP_NET_RAW`. The default container capability set includes it, but a restrictive Pod Security Standard that drops all capabilities will break the tools.
+
 ### iPerf3 Installation (Optional)
 > It is recommended to install iPerf3 on a different server from your looking glass to avoid network congestion.
 
