@@ -1,19 +1,10 @@
 services:
-  nginx:
-    image: hybula/lookingglass-nginx:1
-    container_name: lg-nginx
+  lookingglass:
+    image: ghcr.io/dragonsecurity-incubating/lookingglass:latest
+    container_name: lookingglass
     build:
       context: .
-      dockerfile: docker/nginx/Dockerfile
-    network_mode: host
-    restart: unless-stopped
-
-  php-fpm:
-    image: hybula/lookingglass-php:1
-    container_name: lg-php
-    build:
-      context: .
-      dockerfile: docker/php-fpm/Dockerfile
+      dockerfile: Dockerfile
     network_mode: host
     restart: unless-stopped
     healthcheck:
