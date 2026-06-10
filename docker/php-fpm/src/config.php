@@ -4,12 +4,20 @@ use Hybula\LookingGlass;
 // Define the HTML title;
 const LG_TITLE = 'Looking Glass';
 
+// getenv() returns false for unset vars; under strict_types that false can blow
+// up string contexts (e.g. urlencode()). Coerce to a string so missing optional
+// vars degrade to empty instead of crashing the page.
+function envStr(string $name): string {
+    $value = getenv($name);
+    return $value === false ? '' : $value;
+}
+
 // Define a logo, this can be HTML too, see the other example for an image;
-define('LG_LOGO', getenv('LOGO'));
-define('LG_LOGO_DARK', getenv('LOGO_DARK'));
- 
+define('LG_LOGO', envStr('LOGO'));
+define('LG_LOGO_DARK', envStr('LOGO_DARK'));
+
  // Define the URL where the logo points to;
-define('LG_LOGO_URL', getenv('LOGO_URL'));
+define('LG_LOGO_URL', envStr('LOGO_URL'));
 
 // Theme mode;
 const LG_THEME = 'auto';
@@ -40,17 +48,17 @@ const LG_CUSTOM_HEADER_PHP = __DIR__.'/custom.header.php';
 const LG_CUSTOM_FOOTER_PHP = __DIR__.'/custom.footer.php';
 
 // Define the location of this network, usually a city and a country;
-define('LG_LOCATION', getenv('LOCATION'));
+define('LG_LOCATION', envStr('LOCATION'));
 // Define a query location for the link to openstreetmap (eg: Amsterdam, Netherlands will be https://www.openstreetmap.org/search?query=Amsterdam, Netherlands)
-define('LG_MAPS_QUERY', getenv('MAPS_QUERY'));
+define('LG_MAPS_QUERY', envStr('MAPS_QUERY'));
 // Define the facility where the network is located, usually a data center;
-define('LG_FACILITY', getenv('FACILITY'));
+define('LG_FACILITY', envStr('FACILITY'));
 // Define a direct link to more information about the facility, this should be a link to PeeringDB;
-define('LG_FACILITY_URL', getenv('FACILITY_URL'));
+define('LG_FACILITY_URL', envStr('FACILITY_URL'));
 // Define an IPv4 for testing;
-define('LG_IPV4', getenv('IPV4_ADDRESS'));
+define('LG_IPV4', envStr('IPV4_ADDRESS'));
 // Define an IPv6 for testing;
-define('LG_IPV6', getenv('IPV6_ADDRESS'));
+define('LG_IPV6', envStr('IPV6_ADDRESS'));
 
 // Parse a comma-separated env var into an indexed array; returns $default when the var is unset/empty.
 // Example env value: "ping,mtr,traceroute"
